@@ -3,3 +3,4 @@ pandas
 matplotlib
 requests
 python-dotenv
+streamlit
