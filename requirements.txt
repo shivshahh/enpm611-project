@@ -4,3 +4,4 @@ matplotlib
 requests
 python-dotenv
 streamlit
+matplotlib
