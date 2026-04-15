@@ -10,6 +10,8 @@ import argparse
 import config
 from example_analysis import ExampleAnalysis
 from labels_analysis import LabelsAnalysis
+import streamlit as st
+import os
 
 
 def parse_args():
@@ -55,6 +57,7 @@ elif args.feature == 1:
 elif args.feature == 2:
     pass # TODO call second analysis
 elif args.feature == 3:
-    pass # TODO call third analysis
+    os.system("streamlit run dashboard/app.py")
+    
 else:
     print('Need to specify which feature to run with --feature flag.')
