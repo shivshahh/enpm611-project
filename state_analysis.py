@@ -5,7 +5,7 @@ Analyze Poetry GitHub issues, count total, and by state and display results in
 the console.
 
 Usage:
-    python states_analysis.py
+    python state_analysis.py
 """
 from typing import List
 
@@ -15,7 +15,7 @@ from collections import defaultdict
 
 class StateAnalysis:
     """
-    Implements an analysis of GitHub issues by stateand outputs the result of
+    Implements an analysis of GitHub issues by state and outputs the result of
     to the console as plain text.
     """
     def run(self):
@@ -40,27 +40,26 @@ class StateAnalysis:
         print(output)
         
         # For each user, count how many issues are open
-        user_state_count = defaultdict(lambda: defaultdict(int))
+        user_open_count = defaultdict(int)
         for issue in issues:
             if issue.creator and issue.state == 'open':
-                user_state_count[issue.creator]['open'] += 1
+                user_open_count[issue.creator] += 1
         
         # Determine the top contributor
-        if user_state_count:
-            top_contributor = max(user_state_count, key=lambda u: user_state_count[u]['open'])
-            top_count = user_state_count[top_contributor]['open']
+        if user_open_count:
+            top_contributor = max(user_open_count, key=lambda u: user_open_count[u])
+            top_count = user_open_count[top_contributor]
             print(f'Top contributor: {top_contributor} with {top_count} open issues\n')
         else:
             print('No users with open issues.\n')
         
         # Print open issue counts per user
-        output = f'Open issue counts per user ({len(user_state_count)} users with open issues):\n'
-        for creator, states in user_state_count.items():
-            open_count = states.get('open', 0)
+        output = f'Open issue counts per user ({len(user_open_count)} users with open issues):\n'
+        for creator, open_count in user_open_count.items():
             output += f'{creator}: {open_count}\n'
         print(output)
 
 if __name__ == '__main__':
-    # Invoke run method to start analyizing issue states and display results
+    # Invoke run method to start analyzing issue states and display results
     # in the console.
     StateAnalysis().run()
