@@ -3,6 +3,7 @@ from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from datetime import datetime
 
 from data_loader import DataLoader
 from model import Issue,Event
@@ -10,60 +11,100 @@ import config
 from collections import defaultdict
 
 class LabelsAnalysis:
-    """
-    Implements an example analysis of GitHub
-    issues and outputs the result of that analysis.
-    """
+    # Will calculate average time issue it takes for issue to close (complete) for each label
     
     def __init__(self):
         """
         Constructor
         """
-        # Parameter is passed in via command line (--user)
-        self.labels:str = config.get_parameter('labels')
-        self.label_count = defaultdict(int)
-        self.year        = defaultdict(int)
+        # Parameter is passed in via command line (--label)
+        self.LABEL:str = config.get_parameter('label')
+        self.labels = {}
+        self.label_count = {}
     
-    def run(self, filter_on_year=False, year=2026):
-        """
-        Starting point for this analysis.
-        
-        Note: this is just an example analysis. You should replace the code here
-        with your own implementation and then implement two more such analyses.
-        """
+    def run(self):
         issues:List[Issue] = DataLoader().get_issues()
-        
+        closed = 0
+
         ### BASIC STATISTICS
-        # Calculate the total number of events for a specific user (if specified in command line args)
 
-        for issue in issues:
-            if filter_on_year:
-                if issue.created_date.year != year:
-                    continue 
-                else:
-                    for label in issue.labels:
-                        self.label_count[label] += 1
-                        self.year[issue.created_date.year] += 1
-        output:str = f'Found {len(issues)} issues with the following label counts: \n'
-        for label, count in self.label_count.items():
-            output += f'\t{label}: {count}\n'
-        print('\n\n'+output+'\n\n')
+        # Calculate the average time it takes for an issue to close (complete) per label
+        # Keep track of how many of each label there is
+        for i in issues:
+            # Increment label count
+            for l in i.labels:
+                try:
+                    self.label_count[l] += 1
+                except KeyError:
+                    self.label_count[l] = 1
+            
+            # If issue is closed then update time tracking
+            if i.state == 'closed':
+                closed += 1
+                creation = i.created_date.timestamp()
+                updated = i.updated_date.timestamp()
+                length = updated - creation
+                for l in i.labels:
+                    try:
+                        self.labels[l] += length
+                    except KeyError:
+                        self.labels[l] = length
 
-        ### BAR CHART
-        # Display a graph of the top 50 labels of issues
-        top_n:int = 50
-        # Create a dataframe (with only the label's name) to make statistics a lot easier
-        df = pd.DataFrame.from_records([{'label':label} for issue in issues for label in issue.labels])
-        # Determine the number of issues for each label and generate a bar chart of the top N
-        df_hist = df.groupby(df["label"]).value_counts().nlargest(top_n).plot(kind="bar", figsize=(14,8), title=f"Top {top_n} issue labels")
-        # Set axes labels
-        df_hist.set_xlabel("Label Names")
-        df_hist.set_ylabel("# of issues with label")
-        # Plot the chart
-        plt.show() 
-                        
-    
+        for l in self.labels:
+            self.labels[l] = int(self.labels[l] // closed)
+        
+        print("\nLabel statistics:\n")
+
+        if self.LABEL is None:
+            for l in self.labels:
+                print(l + " average time to close: " + str(self.labels[l]) + " seconds")
+                print(l + " found in " + str(self.label_count[l]) + " issues")
+                print("---------------------")
+
+            ### BAR CHART
+            
+            # Averages dataframe
+            df_averages = pd.DataFrame(list(self.labels.items()), columns=["label", "seconds"])
+            df_averages = df_averages.sort_values(by="seconds", ascending=False)
+            avg_fig, avg_axis = plt.subplots(figsize=(14, 8))
+            df_averages.plot(x="label", y="seconds", kind="bar", ax=avg_axis, figsize=(14, 8), title="Average Time to Close Issue By Label")
+
+            # X axis configs
+            avg_axis.set_xlabel("Labels")
+            avg_axis.tick_params(axis='x', rotation=80)
+
+            # Y axis configs
+            avg_axis.set_ylabel("Average Time to Close (seconds)")
+            avg_axis.set_yscale('log')
+            
+            # Chart config
+            avg_fig.tight_layout()
+
+            # Count dataframe
+            df_count = pd.DataFrame(list(self.label_count.items()), columns=["label", "count"])
+            df_count = df_count.sort_values(by="count", ascending=False)
+            count_fig, count_axis = plt.subplots(figsize=(14,8))
+            df_count.plot(x="label", y="count", ax=count_axis, kind="bar", figsize=(14, 8), title="Label Occurences Across All Issues")
+            
+            # X axis configs
+            count_axis.set_xlabel("Labels")
+            count_axis.tick_params(axis='x', rotation=80)
+
+            # Y axis configs
+            count_axis.set_ylabel("Occurences")
+            count_axis.set_yscale('log')
+            
+            # Chart config
+            count_fig.tight_layout()
+            
+            plt.show() 
+        else:
+            try:
+                print(self.LABEL + " average time to close: " + str(self.labels[self.LABEL]) + " seconds")
+                print(self.LABEL + " found in " + str(self.label_count[self.LABEL]) + " issues")
+            except KeyError:
+                print('Label "' + self.LABEL + '" does not exist in issues')
 
 if __name__ == '__main__':
     # Invoke run method when running this module directly
-    LabelsAnalysis().run(filter_on_year=True, year=2026)
+    LabelsAnalysis().run()
