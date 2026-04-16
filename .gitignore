@@ -10,7 +10,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-.superpowers
+.superpowers/
 docs/
 .Python
 build/
