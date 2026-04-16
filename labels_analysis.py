@@ -3,6 +3,7 @@ from typing import List
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from datetime import datetime
 
 from data_loader import DataLoader
 from model import Issue,Event
@@ -10,54 +11,64 @@ import config
 from collections import defaultdict
 
 class LabelsAnalysis:
-    """
-    Implements an example analysis of GitHub
-    issues and outputs the result of that analysis.
-    """
+    # Will calculate average time issue it takes for issue to close (complete) for each label
     
     def __init__(self):
         """
         Constructor
         """
-        # Parameter is passed in via command line (--user)
-        self.labels:str = config.get_parameter('labels')
-        self.label_count = defaultdict(int)
+        # Parameter is passed in via command line (--label)
+        self.LABEL:str = config.get_parameter('label')
+        self.labels = {}
     
     def run(self):
-        """
-        Starting point for this analysis.
-        
-        Note: this is just an example analysis. You should replace the code here
-        with your own implementation and then implement two more such analyses.
-        """
         issues:List[Issue] = DataLoader().get_issues()
-        
+        closed = 0
+
         ### BASIC STATISTICS
-        # Calculate the total number of events for a specific user (if specified in command line args)
+        # Calculate the average time it takes for an issue to close (complete) per label
+        for i in issues:
+            if i.state == 'closed':
+                closed += 1
+                creation = i.created_date.timestamp()
+                updated = i.updated_date.timestamp()
+                length = updated - creation
+                for l in i.labels:
+                    try:
+                        self.labels[l] += length
+                    except KeyError:
+                        self.labels[l] = length
 
-        for issue in issues:
-            for label in issue.labels:
-                self.label_count[label] += 1
-        output:str = f'Found {len(issues)} issues with the following label counts: \n'
-        for label, count in self.label_count.items():
-            output += f'\t{label}: {count}\n'
-        print('\n\n'+output+'\n\n')
+        for l in self.labels:
+            self.labels[l] = int(self.labels[l] // closed)
+        
+        print("Average time for issue to close per label (seconds)")
 
-        ### BAR CHART
-        # Display a graph of the top 50 labels of issues
-        top_n:int = 50
-        # Create a dataframe (with only the label's name) to make statistics a lot easier
-        df = pd.DataFrame.from_records([{'label':label} for issue in issues for label in issue.labels])
-        # Determine the number of issues for each label and generate a bar chart of the top N
-        df_hist = df.groupby(df["label"]).value_counts().nlargest(top_n).plot(kind="bar", figsize=(14,8), title=f"Top {top_n} issue labels")
-        # Set axes labels
-        df_hist.set_xlabel("Label Names")
-        df_hist.set_ylabel("# of issues with label")
-        # Plot the chart
-        plt.show() 
-                        
-    
+        if self.LABEL is None:
+            for l in self.labels:
+                print(l + ": " + str(self.labels[l]) + " seconds")
+
+            ### BAR CHART
+            df = pd.DataFrame(list(self.labels.items()), columns=["label", "seconds"])
+            df = df.sort_values(by="seconds", ascending=False)
+            
+            # Display a graph of the average times per label if no label specified
+            df.plot(x="label", y="seconds", kind="bar", figsize=(14, 8), title="Average Time to Close Issue By Label")
+
+            # X axis configs
+            plt.xlabel("Label Names")
+            plt.xticks(rotation=80) 
+
+            # Y axis configs
+            plt.ylabel("Average Time to Close (seconds)")
+            plt.yscale('log')
+            
+            # Plot the chart
+            plt.tight_layout()
+            plt.show() 
+        else:
+            print(self.LABEL + ": " + str(self.labels[self.LABEL]) + " seconds")
 
 if __name__ == '__main__':
     # Invoke run method when running this module directly
-    ExampleAnalysis().run()
+    LabelsAnalysis().run()
