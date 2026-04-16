@@ -22,8 +22,9 @@ class LabelsAnalysis:
         # Parameter is passed in via command line (--user)
         self.labels:str = config.get_parameter('labels')
         self.label_count = defaultdict(int)
+        self.year        = defaultdict(int)
     
-    def run(self):
+    def run(self, filter_on_year=False, year=2026):
         """
         Starting point for this analysis.
         
@@ -36,8 +37,13 @@ class LabelsAnalysis:
         # Calculate the total number of events for a specific user (if specified in command line args)
 
         for issue in issues:
-            for label in issue.labels:
-                self.label_count[label] += 1
+            if filter_on_year:
+                if issue.created_date.year != year:
+                    continue 
+                else:
+                    for label in issue.labels:
+                        self.label_count[label] += 1
+                        self.year[issue.created_date.year] += 1
         output:str = f'Found {len(issues)} issues with the following label counts: \n'
         for label, count in self.label_count.items():
             output += f'\t{label}: {count}\n'
@@ -60,4 +66,4 @@ class LabelsAnalysis:
 
 if __name__ == '__main__':
     # Invoke run method when running this module directly
-    ExampleAnalysis().run()
+    LabelsAnalysis().run(filter_on_year=True, year=2026)
