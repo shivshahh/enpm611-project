@@ -1,0 +1,87 @@
+---
+config:
+  layout: elk
+---
+classDiagram
+    class config {
+        -_config : config
+        -_init_config(path=None)
+        -_get_default_path()
+        +get_parameter(parameter_name, default)
+        +convert_to_typed_value(value)
+        +set_parameter(name, value)
+        +overwrite_from_args(args)
+    }
+    class DataLoader {
+        -_ISSUES : list~Issue~
+        +string data_path
+        +get_issues()
+        +_load()
+    }
+    DataLoader --> Issue
+    DataLoader --> config
+    class State {
+        <<enumeration>>
+        open
+        closed
+    }
+
+    class Event {
+        +string event_type
+        +string author
+        +datetime event_date
+        +string label
+        +string comment
+        +from_json(jobj : any)
+    }
+
+    class Issue {
+        +string url
+        +string creator
+        +list~string~ labels
+        +State state
+        +list~string~ assignees
+        +string title
+        +string text
+        +int number
+        +datetime created_date
+        +datetime updated_date
+        +string timeline_url
+        +list~Event~ events
+        +from_json(jobj)
+    }
+
+    Issue *-- Event
+    Issue --> State
+    class ExampleAnalysis {
+        +string USER
+        +run()
+    }
+    ExampleAnalysis --> DataLoader
+    ExampleAnalysis --> Issue
+    ExampleAnalysis --> Event
+    ExampleAnalysis --> config
+    class LabelsAnalysis {
+        +string labels
+        +dict~string,int~ label_count
+        +run()
+    }
+    LabelsAnalysis --> DataLoader
+    LabelsAnalysis --> Issue
+    LabelsAnalysis --> config
+    class IssuePull {
+        +GRAPHQL_URL
+        +headers : dict~string,string~
+        +session : requests.Session
+        +QUERY
+        +main_collection_loop()
+    }
+    class run_py {
+        +parse_args()
+        +main logic
+    }
+
+    run_py --> config
+    run_py --> ExampleAnalysis
+    run_py --> LabelsAnalysis
+    IssuePull --> "1" config
