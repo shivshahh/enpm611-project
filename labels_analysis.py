@@ -20,14 +20,25 @@ class LabelsAnalysis:
         # Parameter is passed in via command line (--label)
         self.LABEL:str = config.get_parameter('label')
         self.labels = {}
+        self.label_count = {}
     
     def run(self):
         issues:List[Issue] = DataLoader().get_issues()
         closed = 0
 
         ### BASIC STATISTICS
+
         # Calculate the average time it takes for an issue to close (complete) per label
+        # Keep track of how many of each label there is
         for i in issues:
+            # Increment label count
+            for l in i.labels:
+                try:
+                    self.label_count[l] += 1
+                except KeyError:
+                    self.label_count[l] = 1
+            
+            # If issue is closed then update time tracking
             if i.state == 'closed':
                 closed += 1
                 creation = i.created_date.timestamp()
@@ -42,32 +53,57 @@ class LabelsAnalysis:
         for l in self.labels:
             self.labels[l] = int(self.labels[l] // closed)
         
-        print("Average time for issue to close per label (seconds)")
+        print("\nLabel statistics:\n")
 
         if self.LABEL is None:
             for l in self.labels:
-                print(l + ": " + str(self.labels[l]) + " seconds")
+                print(l + " average time to close: " + str(self.labels[l]) + " seconds")
+                print(l + " found in " + str(self.label_count[l]) + " issues")
+                print("---------------------")
 
             ### BAR CHART
-            df = pd.DataFrame(list(self.labels.items()), columns=["label", "seconds"])
-            df = df.sort_values(by="seconds", ascending=False)
             
-            # Display a graph of the average times per label if no label specified
-            df.plot(x="label", y="seconds", kind="bar", figsize=(14, 8), title="Average Time to Close Issue By Label")
+            # Averages dataframe
+            df_averages = pd.DataFrame(list(self.labels.items()), columns=["label", "seconds"])
+            df_averages = df_averages.sort_values(by="seconds", ascending=False)
+            avg_fig, avg_axis = plt.subplots(figsize=(14, 8))
+            df_averages.plot(x="label", y="seconds", kind="bar", ax=avg_axis, figsize=(14, 8), title="Average Time to Close Issue By Label")
 
             # X axis configs
-            plt.xlabel("Label Names")
-            plt.xticks(rotation=80) 
+            avg_axis.set_xlabel("Labels")
+            avg_axis.tick_params(axis='x', rotation=80)
 
             # Y axis configs
-            plt.ylabel("Average Time to Close (seconds)")
-            plt.yscale('log')
+            avg_axis.set_ylabel("Average Time to Close (seconds)")
+            avg_axis.set_yscale('log')
             
-            # Plot the chart
-            plt.tight_layout()
+            # Chart config
+            avg_fig.tight_layout()
+
+            # Count dataframe
+            df_count = pd.DataFrame(list(self.label_count.items()), columns=["label", "count"])
+            df_count = df_count.sort_values(by="count", ascending=False)
+            count_fig, count_axis = plt.subplots(figsize=(14,8))
+            df_count.plot(x="label", y="count", ax=count_axis, kind="bar", figsize=(14, 8), title="Label Occurences Across All Issues")
+            
+            # X axis configs
+            count_axis.set_xlabel("Labels")
+            count_axis.tick_params(axis='x', rotation=80)
+
+            # Y axis configs
+            count_axis.set_ylabel("Occurences")
+            count_axis.set_yscale('log')
+            
+            # Chart config
+            count_fig.tight_layout()
+            
             plt.show() 
         else:
-            print(self.LABEL + ": " + str(self.labels[self.LABEL]) + " seconds")
+            try:
+                print(self.LABEL + " average time to close: " + str(self.labels[self.LABEL]) + " seconds")
+                print(self.LABEL + " found in " + str(self.label_count[self.LABEL]) + " issues")
+            except KeyError:
+                print('Label "' + self.LABEL + '" does not exist in issues')
 
 if __name__ == '__main__':
     # Invoke run method when running this module directly
