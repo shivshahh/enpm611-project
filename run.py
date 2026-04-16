@@ -10,6 +10,7 @@ import argparse
 import config
 from example_analysis import ExampleAnalysis
 from labels_analysis import LabelsAnalysis
+from state_analysis import StateAnalysis
 
 
 def parse_args():
@@ -53,7 +54,8 @@ elif args.feature == 1:
     LabelsAnalysis().run()
     
 elif args.feature == 2:
-    pass # TODO call second analysis
+    StateAnalysis().run()
+    
 elif args.feature == 3:
     pass # TODO call third analysis
 else:
