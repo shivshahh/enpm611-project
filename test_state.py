@@ -4,7 +4,7 @@ import os
 
 from unittest.mock import patch, mock_open
 
-from model import Issue
+from model import Issue, Event
 from features.state_analysis import StateAnalysis
 import config
 
@@ -98,6 +98,21 @@ class TestState(unittest.TestCase):
 
         self.assertEqual(config.get_parameter("missing", default="fallback"), "fallback")
         self.assertIsNone(config.get_parameter("missing_no_default"))
+
+    # Test to get coverage into model.py
+    def test_event_invalid_date_does_not_crash(self):
+        jobj = {
+            "event_type": "commented",
+            "author": "bob",
+            "event_date": "not-a-date",
+            "label": "bug",
+            "comment": "hi"
+        }
+
+        e = Event(jobj)
+
+        self.assertEqual(e.event_type, "commented")
+        self.assertIsNone(e.event_date)  # covers except: pass
 
 if __name__ == "__main__":
     unittest.main()
