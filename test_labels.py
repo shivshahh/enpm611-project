@@ -176,6 +176,45 @@ class TestLabels(unittest.TestCase):
         self.assertEqual(analysis.labels["bug"], 86400)
         self.assertEqual(analysis.labels["enhancement"], 172800)
 
+    # test closed issue with no labels and another one with labels
+    # verify that closed unlabeled issues do not increment closed count.
+    @patch('features.labels_analysis.plt.show') # stop graph from showing up
+    @patch('features.labels_analysis.DataLoader') # control what data gets loaded
+    @patch('features.labels_analysis.config.get_parameter', return_value=None) # simulate no label arg passed
+    @patch('sys.stdout', new_callable=io.StringIO) # get stdout to confirm output
+    def test_label_avaerage_is_per_label_not_global(self, mock_stdout, mock_config, mock_loader, mock_show):
+        labeled_issue = Issue({
+            "labels": ["bug"],
+            "state": "closed",
+            "created_date": "2026-01-12T13:32:52Z",
+            "updated_date": "2026-01-13T13:32:52Z"
+        })
+
+        bug_issue = Issue({
+            "labels": ["bug"],
+            "state": "closed",
+            "created_date": "2026-01-12T13:32:52Z",
+            "updated_date": "2026-01-13T13:32:52Z"
+        })
+
+        enhancement_issue = Issue({
+            "labels": ["enhancement"],
+            "state": "closed",
+            "created_date": "2026-01-12T13:32:52Z",
+            "updated_date": "2026-01-14T13:32:52Z"
+        })
+
+        # load issues
+        mock_loader.return_value.get_issues.return_value = [bug_issue, enhancement_issue]
+
+        # run analyis
+        analysis = LabelsAnalysis()
+        analysis.run()
+
+        # ensure each label appears in exactly one closed issue and each average equals that single issue duration.
+        self.assertEqual(analysis.labels["bug"], 86400)
+        self.assertEqual(analysis.labels["enhancement"], 172800)
+
         
 if __name__ == "__main__":
     unittest.main()
