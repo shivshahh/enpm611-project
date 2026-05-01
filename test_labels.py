@@ -144,6 +144,38 @@ class TestLabels(unittest.TestCase):
         
         self.assertEqual(analysis.label_count["bug"], 2)  # both issues counted
         self.assertEqual(analysis.labels["bug"], 86400)   # only the closed issue contributes
+
+    # test the sum of the close times per label is calculated correctly
+    @patch('features.labels_analysis.plt.show') # stop graph from showing up
+    @patch('features.labels_analysis.DataLoader') # control what data gets loaded
+    @patch('features.labels_analysis.config.get_parameter', return_value=None) # simulate no label arg passed
+    @patch('sys.stdout', new_callable=io.StringIO) # get stdout to confirm output
+    def test_label_average_uses_only_issues_with_label(self, mock_stdout, mock_config, mock_loader, mock_show):
+        bug_issue = Issue({
+            "labels": ["bug"],
+            "state": "closed",
+            "created_date": "2026-01-12T13:32:52Z",
+            "updated_date": "2026-01-13T13:32:52Z"
+        })
+
+        enhancement_issue = Issue({
+            "labels": ["enhancement"],
+            "state": "closed",
+            "created_date": "2026-01-12T13:32:52Z",
+            "updated_date": "2026-01-14T13:32:52Z"
+        })
+
+        # load issues
+        mock_loader.return_value.get_issues.return_value = [bug_issue, enhancement_issue]
+
+        # run analyis
+        analysis = LabelsAnalysis()
+        analysis.run()
+
+        # ensure sum of close times per label is correct (bug should be 1 day in seconds and enhancement should be 2 days in seconds)
+        self.assertEqual(analysis.labels["bug"], 86400)
+        self.assertEqual(analysis.labels["enhancement"], 172800)
+
         
 if __name__ == "__main__":
     unittest.main()
