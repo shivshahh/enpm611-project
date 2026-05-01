@@ -1,5 +1,5 @@
 
-from typing import List
+from typing import List, Optional
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -18,7 +18,7 @@ class LabelsAnalysis:
         Constructor
         """
         # Parameter is passed in via command line (--label)
-        self.LABEL:str = config.get_parameter('label')
+        self.LABEL: Optional[str] = config.get_parameter('label')
         self.labels = {}
         self.label_count = {}
     
