@@ -41,7 +41,7 @@ class TestLabels(unittest.TestCase):
         # Mock issue to confirm the output
         mock_issues = [
             Issue({
-                "labels": ["bug", "bug"],
+                "labels": ["bug"],
                 "state": "closed",
                 "created_date": "2026-01-23T08:12:56Z",
                 "updated_date": "2026-04-28T09:34:56Z"
