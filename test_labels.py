@@ -114,6 +114,36 @@ class TestLabels(unittest.TestCase):
         
         # ensure label "nonexistent" does not exist in issues" text is present in stdout
         self.assertIn('Label "nonexistent" does not exist in issues', mock_stdout.getvalue())
+
+    # open issue excluded from time
+    @patch('features.labels_analysis.plt.show') # stop graph from showing up
+    @patch('features.labels_analysis.DataLoader') # control what data gets loaded
+    @patch('features.labels_analysis.config.get_parameter', return_value=None) # simulate no label arg passed
+    @patch('sys.stdout', new_callable=io.StringIO) # get stdout to confirm output
+    def test_open_issue_excluded_from_time(self, mock_stdout, mock_config, mock_loader, mock_show):
+        # closed issue provides plot data while the open issue should not affect time tracking
+        closed_issue = Issue({
+            "labels": ["bug"],
+            "state": "closed",
+            "created_date": "2026-01-12T13:32:52Z",
+            "updated_date": "2026-01-13T13:32:52Z"
+        })
+        open_issue = Issue({
+            "labels": ["bug"],
+            "state": "open", # open issue should be excluded from time calculations
+            "created_date": "2026-01-12T13:32:52Z",
+            "updated_date": "2026-04-24T01:04:51Z"
+        })
+
+        # load issues
+        mock_loader.return_value.get_issues.return_value = [closed_issue, open_issue]
+
+        # run analyis
+        analysis = LabelsAnalysis()
+        analysis.run()
+        
+        self.assertEqual(analysis.label_count["bug"], 2)  # both issues counted
+        self.assertEqual(analysis.labels["bug"], 86400)   # only the closed issue contributes
         
 if __name__ == "__main__":
     unittest.main()
