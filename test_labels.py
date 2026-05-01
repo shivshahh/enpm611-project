@@ -68,7 +68,7 @@ class TestLabels(unittest.TestCase):
         # ensure the "bug avaerage time to close:" is in the stdout output
         self.assertIn("bug average time to close:", mock_stdout.getvalue())
 
-    # Specific label filter when label is found
+    # specific label filter when label is found
     @patch('features.labels_analysis.DataLoader')
     @patch('features.labels_analysis.config.get_parameter', return_value="bug") # Simulate label arg passed as "bug"
     @patch('sys.stdout', new_callable=io.StringIO)
@@ -92,6 +92,28 @@ class TestLabels(unittest.TestCase):
         self.assertIn("bug average time to close:", output)
         self.assertIn("bug found in", output)
         self.assertNotIn("does not exist", output)
+
+    # specific label filter when label is not found
+    @patch('features.labels_analysis.DataLoader')
+    @patch('features.labels_analysis.config.get_parameter', return_value="nonexistent") # simulate label arg was passed as "nonexistent"
+    @patch('sys.stdout', new_callable=io.StringIO) # get the stdout to confirm the output
+    def test_specific_label_not_found(self, mock_stdout, mock_config, mock_loader):
+        # issue to confirm the output
+        issue = Issue({
+            "labels": ["bug"],
+            "state": "closed",
+            "created_date": "2026-01-12T13:32:52Z",
+            "updated_date": "2026-04-24T01:04:51Z"
+        })
+
+        # load issue
+        mock_loader.return_value.get_issues.return_value = [issue]
+
+        # run labels analyis
+        LabelsAnalysis().run()
+        
+        # ensure label "nonexistent" does not exist in issues" text is present in stdout
+        self.assertIn('Label "nonexistent" does not exist in issues', mock_stdout.getvalue())
         
 if __name__ == "__main__":
     unittest.main()
