@@ -1,0 +1,21 @@
+python -m coverage report --omit="test_*"  
+Name                                 Stmts   Miss  Cover
+--------------------------------------------------------
+_page_test_utils.py                     50      3    94%
+config.py                               68     24    65%
+dashboard/__init__.py                    0      0   100%
+dashboard/metrics.py                   135      8    94%
+dashboard/pages/1_Overview.py           46      0   100%
+dashboard/pages/2_Triage_Health.py      39      2    95%
+dashboard/pages/3_Contributors.py       56      2    96%
+dashboard/pages/4_Trends.py             29      3    90%
+dashboard/pages/5_Stale_Issues.py       36      5    86%
+dashboard/pages/6_Resolution.py         45      5    89%
+dashboard/pages/7_Labels.py             29      3    90%
+features/__init__.py                     0      0   100%
+features/data_loader.py                 18      1    94%
+features/labels_analysis.py             67      1    99%
+features/state_analysis.py              29      1    97%
+model.py                                63      6    90%
+--------------------------------------------------------
+TOTAL                                  710     64    91%
