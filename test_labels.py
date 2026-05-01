@@ -68,5 +68,30 @@ class TestLabels(unittest.TestCase):
         # ensure the "bug avaerage time to close:" is in the stdout output
         self.assertIn("bug average time to close:", mock_stdout.getvalue())
 
+    # Specific label filter when label is found
+    @patch('features.labels_analysis.DataLoader')
+    @patch('features.labels_analysis.config.get_parameter', return_value="bug") # Simulate label arg passed as "bug"
+    @patch('sys.stdout', new_callable=io.StringIO)
+    def test_specific_label(self, mock_stdout, mock_config, mock_loader):
+        # issue to confirm the output
+        issue = Issue({
+            "labels": ["bug"],
+            "state": "closed",
+            "created_date": "2026-01-25T12:24:56Z",
+            "updated_date": "2026-04-28T12:44:52Z"
+        })
+
+        # loading in the issue above
+        mock_loader.return_value.get_issues.return_value = [issue]
+
+        # Actually run labels analyis
+        LabelsAnalysis().run()
+        
+        output = mock_stdout.getvalue()
+    
+        self.assertIn("bug average time to close:", output)
+        self.assertIn("bug found in", output)
+        self.assertNotIn("does not exist", output)
+        
 if __name__ == "__main__":
     unittest.main()
