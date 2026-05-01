@@ -4,12 +4,12 @@ import io
 from unittest.mock import patch
 
 from model import Issue
-from state_analysis import StateAnalysis
+from features.state_analysis import StateAnalysis
 
 class TestState(unittest.TestCase):
     
     # Initial test on the state analysis run()
-    @patch('state_analysis.DataLoader') # Control what data gets loaded in
+    @patch('features.state_analysis.DataLoader') # Control what data gets loaded in
     @patch('sys.stdout', new_callable=io.StringIO) # Let us retrieve stdout
     def test_simple_state(self, mock_stdout, mock_loader):
         # Mock a small issue to confirm the output

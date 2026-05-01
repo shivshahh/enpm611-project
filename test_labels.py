@@ -4,14 +4,14 @@ import io
 from unittest.mock import patch
 
 from model import Issue
-from labels_analysis import LabelsAnalysis
+from features.labels_analysis import LabelsAnalysis
 
 class TestLabels(unittest.TestCase):
     
     # Initial test on the labels analysis run()
-    @patch('labels_analysis.plt.show') # Stop the graph from showing up
-    @patch('labels_analysis.DataLoader') # Control what data gets loaded in
-    @patch('labels_analysis.config.get_parameter', return_value=None) # Simulate no label arg passed
+    @patch('features.labels_analysis.plt.show') # Stop the graph from showing up
+    @patch('features.labels_analysis.DataLoader') # Control what data gets loaded in
+    @patch('features.labels_analysis.config.get_parameter', return_value=None) # Simulate no label arg passed
     @patch('sys.stdout', new_callable=io.StringIO) # Let us retrieve stdout
     def test_simple_labels(self, mock_stdout, mock_config, mock_loader, mock_show):
         # Mock a small issue to confirm the output

@@ -9,10 +9,10 @@ import argparse
 
 import config
 from example_analysis import ExampleAnalysis
-from labels_analysis import LabelsAnalysis
+from features.labels_analysis import LabelsAnalysis
 import streamlit as st
 import os
-from state_analysis import StateAnalysis
+from features.state_analysis import StateAnalysis
 
 
 def parse_args():
