@@ -288,6 +288,32 @@ class TestStalePage(BaseDashboardTest):
     def test_no_data(self):
         with self.assertRaises(PageStopped):
             run_page("5_Stale_Issues.py", self.st)
+    
+    def test_full_rendering(self):
+        import pandas as pd
+        from dashboard.metrics import staleness_metrics
+
+        df = self.make_sample_issues()
+
+        self.st.session_state["df_issues"] = df
+
+        run_page("5_Stale_Issues.py", self.st)
+
+        # header rendered
+        self.st.header.assert_called_with("Stale Issues")
+
+        # metrics rendered
+        self.assertTrue(self.st.columns.called)
+
+        # ensure staleness_metrics was used correctly
+        result = staleness_metrics(df)
+
+        self.assertIn("stale_count", result)
+        self.assertIn("zombie_count", result)
+        self.assertIn("no_response_count", result)
+
+        # plot should be called (because buckets sum > 0)
+        self.assertTrue(self.st.plotly_chart.called)
 
 
 # =========================================================
