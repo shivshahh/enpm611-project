@@ -9,7 +9,7 @@ Usage:
 """
 from typing import List
 
-from data_loader import DataLoader
+from features.data_loader import DataLoader
 from model import Issue
 from collections import defaultdict
 

@@ -1,0 +1,89 @@
+(venv) shivshah@ThousandSunny enpm611-project % python -m coverage run -m unittest discover
+./Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/3_Contributors.py:43: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  all_authors["year_month"] = all_authors["date"].dt.to_period("M")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/3_Contributors.py:64: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  heatmap_events["year_month"] = heatmap_events["event_date"].dt.to_period("M")
+../Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:36: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_copy["year_month"] = df_copy["created_date"].dt.to_period("M")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:39: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_closed = closed.groupby(closed["updated_date"].dt.to_period("M")).size().rename("Closed")
+./Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:36: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_copy["year_month"] = df_copy["created_date"].dt.to_period("M")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:39: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_closed = closed.groupby(closed["updated_date"].dt.to_period("M")).size().rename("Closed")
+./Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:36: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_copy["year_month"] = df_copy["created_date"].dt.to_period("M")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:39: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_closed = closed.groupby(closed["updated_date"].dt.to_period("M")).size().rename("Closed")
+./Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:36: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_copy["year_month"] = df_copy["created_date"].dt.to_period("M")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:39: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_closed = closed.groupby(closed["updated_date"].dt.to_period("M")).size().rename("Closed")
+../Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:36: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_copy["year_month"] = df_copy["created_date"].dt.to_period("M")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:39: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_closed = closed.groupby(closed["updated_date"].dt.to_period("M")).size().rename("Closed")
+./Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:36: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_copy["year_month"] = df_copy["created_date"].dt.to_period("M")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/1_Overview.py:39: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_closed = closed.groupby(closed["updated_date"].dt.to_period("M")).size().rename("Closed")
+./Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/metrics.py:138: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_copy["year_month"] = df_copy["created_date"].dt.to_period("M")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/metrics.py:140: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_closed = closed.groupby(closed["created_date"].dt.to_period("M")).size().rename("closed")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/metrics.py:138: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_copy["year_month"] = df_copy["created_date"].dt.to_period("M")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/metrics.py:140: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_closed = closed.groupby(closed["created_date"].dt.to_period("M")).size().rename("closed")
+.../Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/metrics.py:76: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_copy["year_month"] = df_copy["created_date"].dt.to_period("M")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/metrics.py:77: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_bugs = bugs.groupby(bugs["created_date"].dt.to_period("M")).size().rename("bugs")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/metrics.py:78: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_features = features.groupby(features["created_date"].dt.to_period("M")).size().rename("features")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/metrics.py:76: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_copy["year_month"] = df_copy["created_date"].dt.to_period("M")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/metrics.py:77: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_bugs = bugs.groupby(bugs["created_date"].dt.to_period("M")).size().rename("bugs")
+/Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/metrics.py:78: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  monthly_features = features.groupby(features["created_date"].dt.to_period("M")).size().rename("features")
+./Users/shivshah/School/ENPM611/project/enpm611-project/dashboard/pages/2_Triage_Health.py:42: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  df_with_response["year_month"] = df_with_response["created_date"].dt.to_period("M")
+...FF......F....
+======================================================================
+FAIL: test_label_avaerage_is_per_label_not_global (test_labels.TestLabels.test_label_avaerage_is_per_label_not_global)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.0_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py", line 1432, in patched
+    return func(*newargs, **newkeywargs)
+  File "/Users/shivshah/School/ENPM611/project/enpm611-project/test_labels.py", line 215, in test_label_avaerage_is_per_label_not_global
+    self.assertEqual(analysis.labels["bug"], 86400)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 43200 != 86400
+
+======================================================================
+FAIL: test_label_average_uses_only_issues_with_label (test_labels.TestLabels.test_label_average_uses_only_issues_with_label)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.0_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py", line 1432, in patched
+    return func(*newargs, **newkeywargs)
+  File "/Users/shivshah/School/ENPM611/project/enpm611-project/test_labels.py", line 176, in test_label_average_uses_only_issues_with_label
+    self.assertEqual(analysis.labels["bug"], 86400)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 43200 != 86400
+
+======================================================================
+FAIL: test_config_file_loaded (test_state.TestState.test_config_file_loaded)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.0_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/mock.py", line 1432, in patched
+    return func(*newargs, **newkeywargs)
+  File "/Users/shivshah/School/ENPM611/project/enpm611-project/test_state.py", line 72, in test_config_file_loaded
+    self.assertEqual(config.get_parameter("hello"), "json")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 'json'
+
+----------------------------------------------------------------------
+Ran 30 tests in 1.134s
+
+FAILED (failures=3)
