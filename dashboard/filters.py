@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from datetime import date
 
 
 def render_sidebar(df_issues: pd.DataFrame) -> dict:
@@ -8,11 +9,14 @@ def render_sidebar(df_issues: pd.DataFrame) -> dict:
 
     min_date = df_issues["created_date"].min().date()
     max_date = df_issues["created_date"].max().date()
+    # Streamlit's built-in calendar presets ("past week" ... "past 2 years")
+    # anchor end-of-range to today, so max_value must reach today to accept them.
+    picker_max = max(max_date, date.today())
     date_range = st.sidebar.date_input(
         "Created date range",
         value=(min_date, max_date),
         min_value=min_date,
-        max_value=max_date,
+        max_value=picker_max,
     )
 
     state = st.sidebar.selectbox("Issue state", ["all", "open", "closed"], index=0)

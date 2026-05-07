@@ -45,7 +45,7 @@ with col_right:
         fig_rate.update_layout(template="plotly_dark", height=400, xaxis_title="Month", yaxis_title="Issues")
         st.plotly_chart(fig_rate, use_container_width=True)
 
-st.subheader("Most Reopened Issues")
+st.subheader("Reopened Issues")
 most_reopened = result["most_reopened"]
 if not most_reopened.empty:
     display = most_reopened.copy()

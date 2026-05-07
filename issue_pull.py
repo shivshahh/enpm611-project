@@ -156,7 +156,7 @@ query($cursor: String) {
 # This allows re-running script to pick up where it left off
 existing_numbers = set()
 try:
-    with open("poetry_issues.json", "r") as f:
+    with open("Poetry.json", "r") as f:
         cleaned = json.load(f)
     existing_numbers = {issue["number"] for issue in cleaned}
     print(f"Loaded {len(cleaned)} existing issues (highest #{max(existing_numbers)})")
@@ -252,7 +252,7 @@ while True:
         cleaned.append(issue_json)
 
     # Save after each page so progress survives crashes or interrupts
-    with open("poetry_issues.json", "w") as output:
+    with open("Poetry.json", "w") as output:
         json.dump(cleaned, output, indent=2)
 
     # Check if more pages exist - if not we collected everything

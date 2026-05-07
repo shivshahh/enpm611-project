@@ -28,12 +28,12 @@ if not monthly.empty:
     fig_area.update_layout(template="plotly_dark", height=450, xaxis_title="Month", yaxis_title="Issues")
     st.plotly_chart(fig_area, use_container_width=True)
 
-st.subheader("Fastest Growing Categories (Last 6 Months)")
+st.subheader("Fastest Growing Categories (Last 12 Months vs Prior 12 Months)")
 growth_df = result["label_growth"]
 
 if not growth_df.empty:
     display_df = growth_df.head(15)[["label", "recent_count", "prior_count", "growth_pct"]].copy()
-    display_df.columns = ["Label", "Last 3 Months", "Prior 3 Months", "Growth %"]
+    display_df.columns = ["Label", "Last 12 Months", "Prior 12 Months", "Growth %"]
     st.dataframe(display_df, use_container_width=True, hide_index=True)
 else:
     st.info("Not enough data for growth analysis.")

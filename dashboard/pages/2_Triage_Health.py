@@ -17,8 +17,8 @@ if df_issues is None:
 result = triage_metrics(df_issues, df_events)
 
 col1, col2, col3 = st.columns(3)
-col1.metric("Median First Response", f"{result['median_first_response_days']} days" if result["median_first_response_days"] else "N/A")
-col2.metric("Median Time to Label", f"{result['median_time_to_label_days']} days" if result["median_time_to_label_days"] else "N/A")
+col1.metric("Median First Response", f"{result['median_first_response_days']} days" if result["median_first_response_days"] is not None else "N/A")
+col2.metric("Median Time to Label", f"{result['median_time_to_label_days']} days" if result["median_time_to_label_days"] is not None else "N/A")
 col3.metric("Unlabeled Issues", f"{result['unlabeled_count']:,}")
 
 st.subheader("First Response Time Distribution")
@@ -35,16 +35,16 @@ if not response_times.empty:
 else:
     st.info("No response time data available.")
 
-st.subheader("Monthly Triage Performance")
+st.subheader("Median First-Response Time by Issue Creation Month")
 df_with_response = df_issues[df_issues["time_to_first_response"].notna()].copy()
 
 if not df_with_response.empty:
     df_with_response["year_month"] = df_with_response["created_date"].dt.to_period("M")
-    monthly_median = df_with_response.groupby("year_month")["time_to_first_response"].median()
-    monthly_median.index = monthly_median.index.to_timestamp()
+    monthly_median_hours = df_with_response.groupby("year_month")["time_to_first_response"].median() * 24
+    monthly_median_hours.index = monthly_median_hours.index.to_timestamp()
     fig_trend = go.Figure()
-    fig_trend.add_trace(go.Scatter(x=monthly_median.index, y=monthly_median.values, mode="lines", name="Median Response Time (days)", line=dict(color="#4a9eff")))
-    fig_trend.update_layout(template="plotly_dark", height=350, xaxis_title="Month", yaxis_title="Days")
+    fig_trend.add_trace(go.Scatter(x=monthly_median_hours.index, y=monthly_median_hours.values, mode="lines", name="Median Response Time (hours)", line=dict(color="#4a9eff")))
+    fig_trend.update_layout(template="plotly_dark", height=350, xaxis_title="Month", yaxis_title="Hours")
     st.plotly_chart(fig_trend, use_container_width=True)
 else:
     st.info("No triage trend data available.")

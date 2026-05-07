@@ -82,19 +82,19 @@ def trend_metrics(df_issues: pd.DataFrame) -> dict:
     monthly["month"] = monthly["month"].dt.to_timestamp()
     all_labels = sorted(set(l for labels in df_issues["labels"] for l in labels))
     now = pd.Timestamp.now(tz="UTC")
-    three_mo_ago = now - pd.Timedelta(days=90)
-    six_mo_ago = now - pd.Timedelta(days=180)
+    one_year_ago = now - pd.Timedelta(days=365)
+    two_years_ago = now - pd.Timedelta(days=730)
     growth_rows = []
     for label in all_labels:
         mask = df_issues["labels"].apply(lambda ls: label in ls)
-        recent = int(mask[df_issues["created_date"] >= three_mo_ago].sum())
-        prior = int(mask[(df_issues["created_date"] >= six_mo_ago) & (df_issues["created_date"] < three_mo_ago)].sum())
+        recent = int(mask[df_issues["created_date"] >= one_year_ago].sum())
+        prior = int(mask[(df_issues["created_date"] >= two_years_ago) & (df_issues["created_date"] < one_year_ago)].sum())
+        if recent == 0 and prior == 0:
+            continue
         if prior > 0:
             growth = round((recent - prior) / prior * 100, 1)
-        elif recent > 0:
-            growth = 100.0
         else:
-            growth = 0.0
+            growth = 100.0
         growth_rows.append({"label": label, "recent_count": recent, "prior_count": prior, "growth_pct": growth})
     growth_df = pd.DataFrame(growth_rows).sort_values("growth_pct", ascending=False)
     return {
@@ -128,10 +128,17 @@ def staleness_metrics(df_issues: pd.DataFrame) -> dict:
 def resolution_metrics(df_issues: pd.DataFrame, df_events: pd.DataFrame) -> dict:
     closed = df_issues[df_issues["state"] == "closed"]
     median_days = closed["days_to_close"].median()
+    # Scope reopen events to issues present in df_issues; otherwise sidebar filters
+    # on issues are ignored when ranking reopens, and the global top-N can fall
+    # entirely outside the user's filter window.
     if not df_events.empty:
-        reopened_issues = df_events[df_events["event_type"] == "ReopenedEvent"]["issue_number"].nunique()
+        reopen_events = df_events[
+            (df_events["event_type"] == "ReopenedEvent")
+            & (df_events["issue_number"].isin(df_issues["number"]))
+        ]
     else:
-        reopened_issues = 0
+        reopen_events = df_events
+    reopened_issues = reopen_events["issue_number"].nunique() if not reopen_events.empty else 0
     total_issues = len(df_issues)
     reopen_rate = round(reopened_issues / total_issues * 100, 1) if total_issues > 0 else 0
     df_copy = df_issues.copy()
@@ -142,9 +149,9 @@ def resolution_metrics(df_issues: pd.DataFrame, df_events: pd.DataFrame) -> dict
     monthly.index.name = "month"
     monthly = monthly.reset_index()
     monthly["month"] = monthly["month"].dt.to_timestamp()
-    if not df_events.empty:
+    if not reopen_events.empty:
         reopen_counts = (
-            df_events[df_events["event_type"] == "ReopenedEvent"]
+            reopen_events
             .groupby("issue_number").size().rename("reopen_count")
             .sort_values(ascending=False).head(10)
         )

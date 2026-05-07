@@ -58,12 +58,28 @@ def add_computed_columns(df_issues: pd.DataFrame, df_events: pd.DataFrame) -> pd
     )
 
     if not df_events.empty:
-        first_event = df_events.groupby("issue_number")["event_date"].min().rename("first_event_date")
-        df_issues = df_issues.merge(first_event, left_on="number", right_index=True, how="left")
-        df_issues["time_to_first_response"] = (
-            (df_issues["first_event_date"] - df_issues["created_date"]).dt.total_seconds() / 86400
-        )
-        df_issues.drop(columns=["first_event_date"], inplace=True)
+        # First response = first comment authored by someone other than the issue
+        # creator. Using min(any event_date) treats auto-applied LabeledEvents
+        # (often timestamped at creation) as instant responses, which collapses
+        # the metric to ~0; pre-creation `committed` events on PRs make it negative.
+        creator_map = df_issues.set_index("number")["creator"]
+        comments = df_events[df_events["event_type"] == "commented"].copy()
+        comments["issue_creator"] = comments["issue_number"].map(creator_map)
+        response = comments[
+            (comments["author"] != "")
+            & (comments["author"] != comments["issue_creator"])
+        ]
+        if not response.empty:
+            first_response = (
+                response.groupby("issue_number")["event_date"].min().rename("first_response_date")
+            )
+            df_issues = df_issues.merge(first_response, left_on="number", right_index=True, how="left")
+            df_issues["time_to_first_response"] = (
+                (df_issues["first_response_date"] - df_issues["created_date"]).dt.total_seconds() / 86400
+            )
+            df_issues.drop(columns=["first_response_date"], inplace=True)
+        else:
+            df_issues["time_to_first_response"] = np.nan
 
         label_events = df_events[df_events["event_type"] == "LabeledEvent"]
         if not label_events.empty:
